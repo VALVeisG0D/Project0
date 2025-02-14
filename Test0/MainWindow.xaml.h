@@ -57,6 +57,9 @@ namespace winrt::Test0::implementation
 			}
 
 			// Adds one vertex
+			// Node creation rules (Chaos/Order)
+			// How many imbalances are there?
+			// In the beginning there is one vertex (an imbalance). This will lead to creation of new vertex
 			int AddVertex()
 			{
 				/*if (adjList.contains(vertex))
