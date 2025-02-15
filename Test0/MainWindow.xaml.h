@@ -57,9 +57,6 @@ namespace winrt::Test0::implementation
 			}
 
 			// Adds one vertex
-			// Node creation rules (Chaos/Order)
-			// How many imbalances are there?
-			// In the beginning there is one vertex (an imbalance). This will lead to creation of new vertex
 			int AddVertex()
 			{
 				/*if (adjList.contains(vertex))
@@ -130,10 +127,14 @@ namespace winrt::Test0::implementation
 				//  movement of the head that allows it to evaluate past results
 				// Graph system evaluation is based on following number of parameters: number of edges connected to a vertex, can also evaluate past
 				// results because all vertices will be evaluated again after update, communication with neighbor vertex to organize update?
-				/*if (adjList[vertex].size() > 5)
-					rule0;
+				// Node creation rules (Chaos/Order)			
+				// How many imbalances are there?
+				// In the beginning there is one vertex (an imbalance). This will lead to creation of new vertex
+				// Even/Odd number of connections
+				if (adjList[vertexID].size() % 2)
+					;//rule0;
 				else
-					rule1;*/
+					;//rule1
 			}
 		};
 
