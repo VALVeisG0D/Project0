@@ -121,7 +121,7 @@ namespace winrt::Test0::implementation
 			// Tug of War between order and chaos
 			// Mark all vertices that is about to be deleted, so as to avoid trying to connect edge to vertex that will be deleted
 			// What kind of structure does this rule hope to achieve? What is a structure? Multiple vertex connected to each other in unique ways?
-			void UpdateRule()
+			void Rule()
 			{
 				// Rule 110 evaluation based on certain number of parameters: 2 color of 3 cells, 2 operations (NAND and shift) based on 3 cells,
 				//  movement of the head that allows it to evaluate past results
@@ -132,9 +132,9 @@ namespace winrt::Test0::implementation
 				// In the beginning there is one vertex (an imbalance). This will lead to creation of new vertex
 				// Even/Odd number of connections
 				if (adjList[vertexID].size() % 2)
-					;//rule0;
+					;//rule0 = NAND computation? How many of connected vertices are EVEN/ODD?
 				else
-					;//rule1
+					;//rule1 = memorize? save state?
 			}
 		};
 
