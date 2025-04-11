@@ -29,7 +29,7 @@ namespace winrt::Test0::implementation
 
 			}
 
-			Graph(std::map<int, std::vector<int>> const& newAdjList) : adjList(newAdjList)
+			Graph(std::map<int, std::vector<int>> const& newAdjList) : adjList(newAdjList), vertexID(0)
 			{
 			}
 
@@ -160,8 +160,6 @@ namespace winrt::Test0::implementation
         Microsoft::UI::Xaml::Controls::Primitives::RepeatButton b;
         Microsoft::UI::Xaml::Shapes::Line l;
         Microsoft::UI::Xaml::Shapes::Ellipse e, q;
-        std::vector<Microsoft::UI::Xaml::Shapes::Ellipse> vertexVisualRepresentationList;
-        std::map<int, std::vector<int>> adjList;
         float xpose = 265.0, ypose = 400.0;
 		class Graph universe;
 

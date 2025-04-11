@@ -168,9 +168,6 @@ namespace winrt::Test0::implementation
 
 
 		//apply lessons from subleq:
-//		Microsoft::UI::Xaml::Shapes::Ellipse e, q;
-//		Microsoft::UI::Xaml::Shapes::Line l;
-//		float xpose = 265.0, ypose = 400.0, 
 		float xposq = 800.0, yposq = 400.0;
 		float vertexRadius = 50.0;
 		l.Stroke(blue);
@@ -241,11 +238,6 @@ namespace winrt::Test0::implementation
 		}
 		*/
 		//e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose + x, ypose + x, 0.0));
-
-
-		//universe.RemoveVertex(2);
-		/*universe.AddVertex(4);
-		universe.AccessAll(tb);*/
 	}
 
 	Windows::Foundation::IAsyncAction MainWindow::DoWorkAsync(Microsoft::UI::Xaml::Controls::TextBlock textblock, winrt::Microsoft::UI::Xaml::Shapes::Ellipse& v)
@@ -289,7 +281,7 @@ namespace winrt::Test0::implementation
 		static int a = 0;
 		a++;
 		text.Text(to_hstring(a));
-		sa = 450;
+		sa = 4070;
 		xpose += 1.0, ypose += 1.0;
 		e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose, ypose, 0.0));
 		l.X1(xpose + 50.0 / 2.0);
@@ -300,13 +292,13 @@ namespace winrt::Test0::implementation
 		te.Height(50.0);
 		te.Width(50.0);
 
-		if (universe.AddVertex() == 50)
+		if (universe.AddVertex() == 500)
 			universe.AddEdge(2, 3);
 		universe.AccessAll(text);
 
-		vertexVisualRepresentationList.push_back(te);
-		SP().Children().Append(vertexVisualRepresentationList.back());
-		vertexVisualRepresentationList.back().Translation(winrt::Windows::Foundation::Numerics::float3(xpose + 200.0, ypose + 200.0, 0.0));
+		universe.vertexVisualRepresentationList.push_back(te);
+		SP().Children().Append(universe.vertexVisualRepresentationList.back());
+		universe.vertexVisualRepresentationList.back().Translation(winrt::Windows::Foundation::Numerics::float3(xpose + 200.0, ypose + 200.0, 0.0));
 	}
 
 	void MainWindow::r(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& handler)
