@@ -170,14 +170,17 @@ namespace winrt::Test0::implementation
 		//apply lessons from subleq:
 		float xposq = 800.0, yposq = 400.0;
 		float vertexRadius = 50.0;
-		l.Stroke(blue);
+		
 
 		e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose, ypose, 0.0));
 		q.Translation(winrt::Windows::Foundation::Numerics::float3(xposq, yposq, 0.0));
-		l.X1(xpose + vertexRadius / 2.0);
+
+		l.Stroke(blue);
+	//	l.X1(xpose + vertexRadius / 2.0);
 		l.X2(xposq + vertexRadius / 2.0);
-		l.Y1(ypose + vertexRadius / 2.0);
+		//l.Y1(ypose + vertexRadius / 2.0);
 		l.Y2(yposq + vertexRadius / 2.0);
+
 		e.Fill(blue);
 		e.Height(vertexRadius);
 		e.Width(vertexRadius);
@@ -268,7 +271,7 @@ namespace winrt::Test0::implementation
 
 	void MainWindow::SimulationLoop(Microsoft::UI::Xaml::Controls::TextBlock textblock)
 	{
-		repeatTimer.Interval(std::chrono::milliseconds{100});
+		repeatTimer.Interval(std::chrono::milliseconds{1});
 		repeatTimer.Tick({ this, &MainWindow::TickEventHandler });
 		repeatTimer.Start();
 
@@ -284,16 +287,18 @@ namespace winrt::Test0::implementation
 		sa = 4070;
 		xpose += 1.0, ypose += 1.0;
 		e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose, ypose, 0.0));
-		l.X1(xpose + 50.0 / 2.0);
-		l.Y1(ypose + 50.0 / 2.0);
 
 		Microsoft::UI::Xaml::Shapes::Ellipse te;
 		te.Fill(Microsoft::UI::Xaml::Media::SolidColorBrush({ Microsoft::UI::Colors::Green() }));
 		te.Height(50.0);
 		te.Width(50.0);
 
-		if (universe.AddVertex() == 500)
+		if (universe.AddVertex() > 50)
+		{
+			l.X1(xpose + 200.0);
+			l.Y1(ypose + 200.0);
 			universe.AddEdge(2, 3);
+		}
 		universe.AccessAll(text);
 
 		universe.vertexVisualRepresentationList.push_back(te);

@@ -8,13 +8,32 @@ namespace winrt::Test0::implementation
     {
 		class Graph
 		{
+			struct vertexProperties
+			{
+				float x, y;
+				std::vector<int> adjancencyVector;
+			};
+
 			// map to represent an adjacency list
 			// Add vertices first, then connect with edges
-			std::map<int, std::vector<int>> adjList;
+			std::map<int, vertexProperties> adjList;
 			// Variable to track freed identifier after vertices have been removed
 			std::vector<int> freedID;
 			// Identifier incremented to max integer
 			int vertexID;
+
+			
+			struct vertexVisualProperties
+			{
+				int x, y, id;
+				Microsoft::UI::Xaml::Media::SolidColorBrush blue{ Microsoft::UI::Colors::Green() };
+				Microsoft::UI::Xaml::Shapes::Ellipse f;
+				
+				void ff()
+				{
+					f.Fill();
+				}
+			};
 
 		public:
 			// Update VisualRepresentation in Graph member functions
@@ -26,11 +45,12 @@ namespace winrt::Test0::implementation
 			// Graph Constructor
 			Graph() : vertexID(0)
 			{
-
+				edgeVisualRepresentation.Stroke(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Green() });
 			}
 
-			Graph(std::map<int, std::vector<int>> const& newAdjList) : adjList(newAdjList), vertexID(0)
+			Graph(std::map<int, vertexProperties> const& newAdjList) : adjList(newAdjList), vertexID(0)
 			{
+				edgeVisualRepresentation.Stroke(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Green() });
 			}
 
 			// Adds single edge
@@ -38,8 +58,13 @@ namespace winrt::Test0::implementation
 			// Evaluate per vertex and have v be the vertices u should connect to by repeatedly calling this, with u being constant
 			void AddEdge(int u, int v)
 			{
-				adjList[u].push_back(v);
-				adjList[v].push_back(u);
+				adjList[u].adjancencyVector.push_back(v);
+				adjList[v].adjancencyVector.push_back(u);
+
+				// Coordinates of edge ends
+				// How to assign coordinate?
+				edgeVisualRepresentation.X2();
+				edgeVisualRepresenationList.push_back(edgeVisualRepresentation);
 			}
 
 			// Removes single edge
@@ -50,10 +75,10 @@ namespace winrt::Test0::implementation
 					return;
 
 				// remove edge from u to v
-				adjList[u].erase(std::find(adjList[u].begin(), adjList[u].end(), v));
+				adjList[u].adjancencyVector.erase(std::find(adjList[u].adjancencyVector.begin(), adjList[u].adjancencyVector.end(), v));
 
 				// remove edge from v to u
-				adjList[v].erase(std::find(adjList[v].begin(), adjList[v].end(), u));
+				adjList[v].adjancencyVector.erase(std::find(adjList[v].adjancencyVector.begin(), adjList[v].adjancencyVector.end(), u));
 			}
 
 			// Adds one vertex
@@ -87,9 +112,9 @@ namespace winrt::Test0::implementation
 				if (!adjList.contains(vertex))
 					return;
 
-				// Remove all edge to this vertex from other vertex. CAUTION VERTICES MAY HAVE MULTIPLE EDGE TO SAME VERTEX
-				for (int i : adjList[vertex])
-					while (std::find(adjList[i].begin(), adjList[i].end(), vertex) != std::end(adjList[i]))
+				// Remove all edge to this vertex from other vertex. CAUTION VERTICES MAY HAVE MULTIPLE EDGES
+				for (int i : adjList[vertex].adjancencyVector)
+					while (std::find(adjList[i].adjancencyVector.begin(), adjList[i].adjancencyVector.end(), vertex) != std::end(adjList[i].adjancencyVector))
 						RemoveEdge(i, vertex);
 
 				// delete this vertex and record its id for reuse
@@ -106,7 +131,7 @@ namespace winrt::Test0::implementation
 				{
 					s.append(std::to_string(it.first) + " --> ");
 
-					for (int j : it.second)
+					for (int j : it.second.adjancencyVector)
 					{
 						s.append(std::to_string(j) + " ");
 					}
@@ -131,7 +156,32 @@ namespace winrt::Test0::implementation
 				// How many imbalances are there?
 				// In the beginning there is one vertex (an imbalance). This will lead to creation of new vertex
 				// Even/Odd number of connections
-				if (adjList[vertexID].size() % 2)
+
+				/*Graph rewrite :
+				-unlimited operands of binary value(positive / negative)
+					- unknown number of rules
+					- nodes / cells can be created or destroyed
+					- alphabets are graph/subgraphs?
+					- no boundaries, no dimension and direction (can emerge from rule?)
+					- create / destroy sets of nodes ?
+					- what kind of graph? simple, planar, connected is simplest?
+					- computation(try to make it as simple as possible) : operand 1 = even / odd number of connections, operand 2 =
+
+					Rule 110 :
+					-3 operands of binary values(past, present, future)
+					- 8 set of rules
+					- alphabet is on/off
+					- number of nodes / cells are fixed.
+					- boundary exists and influences next state, has dimension and direction
+					- only change value of cells
+					- computation: 3 cells; determine state of the same cell for next generation; move sequentially to next cell on same row,
+
+
+
+
+
+					how different they are*/
+				if (adjList[vertexID].adjancencyVector.size() % 2)
 					;//rule0 = NAND computation? How many of connected vertices are EVEN/ODD?
 				else
 					;//rule1 = memorize? save state?
