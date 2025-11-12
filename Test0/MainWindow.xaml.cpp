@@ -304,6 +304,11 @@ namespace winrt::Test0::implementation
 		universe.vertexVisualRepresentationList.push_back(te);
 		SP().Children().Append(universe.vertexVisualRepresentationList.back());
 		universe.vertexVisualRepresentationList.back().Translation(winrt::Windows::Foundation::Numerics::float3(xpose + 200.0, ypose + 200.0, 0.0));
+
+		for (auto& it : universe.getAdjList())
+		{
+
+		}
 	}
 
 	void MainWindow::r(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& handler)

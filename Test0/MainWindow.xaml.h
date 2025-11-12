@@ -11,7 +11,10 @@ namespace winrt::Test0::implementation
 			struct vertexProperties
 			{
 				float x, y;
+				int vertexID;// Identifier incremented to max integer
 				std::vector<int> adjancencyVector;
+
+				//vertexProperties() : vertexID(adjList.size());
 			};
 
 			// map to represent an adjacency list
@@ -28,11 +31,6 @@ namespace winrt::Test0::implementation
 				int x, y, id;
 				Microsoft::UI::Xaml::Media::SolidColorBrush blue{ Microsoft::UI::Colors::Green() };
 				Microsoft::UI::Xaml::Shapes::Ellipse f;
-				
-				void ff()
-				{
-					f.Fill();
-				}
 			};
 
 		public:
@@ -140,6 +138,11 @@ namespace winrt::Test0::implementation
 				}
 
 				t.Text(to_hstring(s));
+			}
+
+			const std::map<int, vertexProperties>& getAdjList() const
+			{
+				return adjList;
 			}
 
 			// How vertices should be connected during each update
