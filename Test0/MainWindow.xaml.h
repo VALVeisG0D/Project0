@@ -13,8 +13,6 @@ namespace winrt::Test0::implementation
 				float x, y;
 				int vertexID;// Identifier incremented to max integer
 				std::vector<int> adjancencyVector;
-
-				//vertexProperties() : vertexID(adjList.size());
 			};
 
 			// map to represent an adjacency list
@@ -23,12 +21,12 @@ namespace winrt::Test0::implementation
 			// Variable to track freed identifier after vertices have been removed
 			std::vector<int> freedID;
 			// Identifier incremented to max integer
-			int vertexID;
+			int vertexID = 0;
 
 			
 			struct vertexVisualProperties
 			{
-				int x, y, id;
+				int x = 0.0f, y = 0.0f, id;
 				Microsoft::UI::Xaml::Media::SolidColorBrush blue{ Microsoft::UI::Colors::Green() };
 				Microsoft::UI::Xaml::Shapes::Ellipse f;
 			};
@@ -37,7 +35,7 @@ namespace winrt::Test0::implementation
 			// Update VisualRepresentation in Graph member functions
 			Microsoft::UI::Xaml::Shapes::Line edgeVisualRepresentation;
 			Microsoft::UI::Xaml::Shapes::Ellipse vertexVisualRepresentation;
-			std::vector<Microsoft::UI::Xaml::Shapes::Line> edgeVisualRepresenationList;
+			std::vector<Microsoft::UI::Xaml::Shapes::Line> edgeVisualRepresentationList;
 			std::vector<Microsoft::UI::Xaml::Shapes::Ellipse> vertexVisualRepresentationList;
 
 			// Graph Constructor
@@ -61,8 +59,11 @@ namespace winrt::Test0::implementation
 
 				// Coordinates of edge ends
 				// How to assign coordinate?
-				edgeVisualRepresentation.X2();
-				edgeVisualRepresenationList.push_back(edgeVisualRepresentation);
+				edgeVisualRepresentation.X1(adjList[u].x);
+				edgeVisualRepresentation.X2(adjList[v].x);
+				edgeVisualRepresentation.Y1(adjList[u].y);
+				edgeVisualRepresentation.Y2(adjList[v].y);
+				edgeVisualRepresentationList.push_back(edgeVisualRepresentation);
 			}
 
 			// Removes single edge
@@ -80,7 +81,7 @@ namespace winrt::Test0::implementation
 			}
 
 			// Adds one vertex
-			int AddVertex()
+			int AddVertex(int pos)
 			{
 				/*if (adjList.contains(vertex))
 					return;
@@ -88,13 +89,14 @@ namespace winrt::Test0::implementation
 				if (!freedID.empty())
 				{
 					adjList[freedID.back()];
-					freedID.pop_back();
+					freedID.pop_back();ff
 				}
 				else
 					adjList[vertex];*/
 
 				adjList[vertexID];
-
+				adjList[vertexID].x = 200.0 + (float)pos * 100.0;
+				adjList[vertexID].y = 200.0 + (float)pos * 100.0;
 				// connect the new vertex to which other vertex?
 				// can be added to connect to vertex in focus?
 				// Update VisualRepresentation structure, what visual coordinate for new vertex?
@@ -127,7 +129,7 @@ namespace winrt::Test0::implementation
 
 				for (auto& it : adjList)
 				{
-					s.append(std::to_string(it.first) + " --> ");
+					s.append(std::to_string(it.second.x) + " --> ");
 
 					for (int j : it.second.adjancencyVector)
 					{
@@ -140,9 +142,9 @@ namespace winrt::Test0::implementation
 				t.Text(to_hstring(s));
 			}
 
-			const std::map<int, vertexProperties>& getAdjList() const
+			const std::pair<float, float> getVertexPosition(int index)
 			{
-				return adjList;
+				return std::pair<float, float>((adjList[index].x), adjList[index].y);
 			}
 
 			// How vertices should be connected during each update
@@ -211,12 +213,9 @@ namespace winrt::Test0::implementation
         Microsoft::UI::Dispatching::DispatcherQueue dispatch{ controller.DispatcherQueue().GetForCurrentThread()};
         Microsoft::UI::Dispatching::DispatcherQueueTimer repeatTimer{ dispatch.CreateTimer() };
         Microsoft::UI::Xaml::Controls::Primitives::RepeatButton b;
-        Microsoft::UI::Xaml::Shapes::Line l;
         Microsoft::UI::Xaml::Shapes::Ellipse e, q;
         float xpose = 265.0, ypose = 400.0;
 		class Graph universe;
-
-        int sa = 0;
     };
 }
 

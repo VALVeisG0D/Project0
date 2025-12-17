@@ -175,11 +175,6 @@ namespace winrt::Test0::implementation
 		e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose, ypose, 0.0));
 		q.Translation(winrt::Windows::Foundation::Numerics::float3(xposq, yposq, 0.0));
 
-		l.Stroke(blue);
-	//	l.X1(xpose + vertexRadius / 2.0);
-		l.X2(xposq + vertexRadius / 2.0);
-		//l.Y1(ypose + vertexRadius / 2.0);
-		l.Y2(yposq + vertexRadius / 2.0);
 
 		e.Fill(blue);
 		e.Height(vertexRadius);
@@ -187,11 +182,6 @@ namespace winrt::Test0::implementation
 		q.Fill(red);
 		q.Height(vertexRadius);
 		q.Width(vertexRadius);
-		SP().Children().Append(e);
-		SP().Children().Append(q);
-		SP().Children().Append(l);
-		//Microsoft::UI::Xaml::Media::Animation::RepositionThemeAnimation a;
-		//a.SetValue(e.);
 
 		//node will spawn new node. apply rule 110 to rewrite system or similar systems??
 		//rule 110 has 3 points of input, how many points of input will this system have??
@@ -199,19 +189,9 @@ namespace winrt::Test0::implementation
 		//what does rewrite system even look like physically in order for this simulation to be entertaining?
 		//most important thing to understand is the underlying idea (balance chaos/order, choice, emergence, stability), not the implementation infrastructure
 
-		/*Microsoft::UI::Xaml::Media::TranslateTransform move;
-		move.X(5.0);
-		move.Y(6.0);
-		e.RenderTransform(move);*/
-
 		Microsoft::UI::Xaml::Controls::TextBlock tb;
 		SP().Children().Append(tb);
 		SP().Children().Append(text);
-
-		/*int jj = 20;
-		tb.Text(to_hstring(++jj + 'z'));
-		using namespace std::chrono_literals;*/
-
 		
 		b.Content(winrt::box_value(L"click"));
 		b.Click({ this, &MainWindow::r });
@@ -240,7 +220,6 @@ namespace winrt::Test0::implementation
 			break;
 		}
 		*/
-		//e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose + x, ypose + x, 0.0));
 	}
 
 	Windows::Foundation::IAsyncAction MainWindow::DoWorkAsync(Microsoft::UI::Xaml::Controls::TextBlock textblock, winrt::Microsoft::UI::Xaml::Shapes::Ellipse& v)
@@ -282,37 +261,32 @@ namespace winrt::Test0::implementation
 	void MainWindow::TickEventHandler(winrt::Microsoft::UI::Dispatching::DispatcherQueueTimer d, winrt::Windows::Foundation::IInspectable i)
 	{
 		static int a = 0;
-		a++;
-		text.Text(to_hstring(a));
-		sa = 4070;
-		xpose += 1.0, ypose += 1.0;
-		e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose, ypose, 0.0));
 
 		Microsoft::UI::Xaml::Shapes::Ellipse te;
 		te.Fill(Microsoft::UI::Xaml::Media::SolidColorBrush({ Microsoft::UI::Colors::Green() }));
 		te.Height(50.0);
 		te.Width(50.0);
 
-		if (universe.AddVertex() > 50)
+		if (a < 10)
 		{
-			l.X1(xpose + 200.0);
-			l.Y1(ypose + 200.0);
-			universe.AddEdge(2, 3);
-		}
-		universe.AccessAll(text);
-
-		universe.vertexVisualRepresentationList.push_back(te);
+			universe.AddVertex(a);	
+			
+			universe.vertexVisualRepresentationList.push_back(te);
 		SP().Children().Append(universe.vertexVisualRepresentationList.back());
-		universe.vertexVisualRepresentationList.back().Translation(winrt::Windows::Foundation::Numerics::float3(xpose + 200.0, ypose + 200.0, 0.0));
-
-		for (auto& it : universe.getAdjList())
-		{
-
+		
+		universe.vertexVisualRepresentationList.back().Translation(winrt::Windows::Foundation::Numerics::float3((universe.getVertexPosition(a)).first, (universe.getVertexPosition(a)).second, 0.0));
 		}
+		if (a == 20)
+			{ 
+				universe.AddEdge(0, 5);
+				SP().Children().Append(universe.edgeVisualRepresentationList.back());
+			}
+		universe.AccessAll(text);
+		a++;
 	}
 
 	void MainWindow::r(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& handler)
 	{
-		b.Content(winrt::box_value(sa + 40));
+		b.Content(winrt::box_value(40));
 	}
 }
