@@ -8,6 +8,8 @@ namespace winrt::Test0::implementation
     {
 		class Graph
 		{
+			// Need to search for vertex and edge for removing and accessing and adding
+			// 1. search 2. do work on them
 			struct vertexProperties
 			{
 				float x, y;
@@ -20,8 +22,8 @@ namespace winrt::Test0::implementation
 			std::map<int, vertexProperties> adjList;
 			// Variable to track freed identifier after vertices have been removed
 			std::vector<int> freedID;
-			// Identifier incremented to max integer
-			int vertexID = 0;
+			// The next vertex id to be assigned
+			int nextVertexID = 0;
 
 			
 			struct vertexVisualProperties
@@ -33,32 +35,38 @@ namespace winrt::Test0::implementation
 
 		public:
 			// Update VisualRepresentation in Graph member functions
-			Microsoft::UI::Xaml::Shapes::Line edgeVisualRepresentation;
-			Microsoft::UI::Xaml::Shapes::Ellipse vertexVisualRepresentation;
 			std::vector<Microsoft::UI::Xaml::Shapes::Line> edgeVisualRepresentationList;
 			std::vector<Microsoft::UI::Xaml::Shapes::Ellipse> vertexVisualRepresentationList;
 
 			// Graph Constructor
-			Graph() : vertexID(0)
+			Graph() : nextVertexID(0)
 			{
-				edgeVisualRepresentation.Stroke(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Green() });
+				
 			}
 
-			Graph(std::map<int, vertexProperties> const& newAdjList) : adjList(newAdjList), vertexID(0)
+			Graph(std::map<int, vertexProperties> const& newAdjList) : adjList(newAdjList), nextVertexID(0)
 			{
-				edgeVisualRepresentation.Stroke(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Green() });
+				
 			}
 
 			// Adds single edge
 			// Can add multiple of same edge
 			// Evaluate per vertex and have v be the vertices u should connect to by repeatedly calling this, with u being constant
+			// How are edges added to the graph? Evaluate per vertex, and add per vertex. Want to add edge to vertex that is as close a distance as possible.
+			// Cannot connect existing vertex that is at a distance greater than 1.
 			void AddEdge(int u, int v)
 			{
+				if (!(adjList.contains(u) && adjList.contains(v)))
+					return;
+
 				adjList[u].adjancencyVector.push_back(v);
 				adjList[v].adjancencyVector.push_back(u);
 
 				// Coordinates of edge ends
 				// How to assign coordinate?
+				Microsoft::UI::Xaml::Shapes::Line edgeVisualRepresentation;
+				edgeVisualRepresentation.Stroke(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Green() });
+
 				edgeVisualRepresentation.X1(adjList[u].x);
 				edgeVisualRepresentation.X2(adjList[v].x);
 				edgeVisualRepresentation.Y1(adjList[u].y);
@@ -81,6 +89,8 @@ namespace winrt::Test0::implementation
 			}
 
 			// Adds one vertex
+			// How are vertex added? Evaluate per vertex and add per vertex, can be multiple vertex added per vertex. Want to add vertex 
+			// to vertex that is as close a distance as possible.
 			int AddVertex(int pos)
 			{
 				/*if (adjList.contains(vertex))
@@ -94,15 +104,15 @@ namespace winrt::Test0::implementation
 				else
 					adjList[vertex];*/
 
-				adjList[vertexID];
-				adjList[vertexID].x = 200.0 + (float)pos * 100.0;
-				adjList[vertexID].y = 200.0 + (float)pos * 100.0;
+				adjList[nextVertexID];
+				adjList[nextVertexID].x = 200.0 + (float)pos * 100.0;
+				adjList[nextVertexID].y = 200.0 + (float)pos * 100.0;
 				// connect the new vertex to which other vertex?
 				// can be added to connect to vertex in focus?
 				// Update VisualRepresentation structure, what visual coordinate for new vertex?
 				// Need to be near vertices which are connected to it?
 				// Should return id to be able to tell which vertex is being added.
-				return vertexID++;
+				return nextVertexID++;
 			}
 
 			// Removes one vertex
@@ -186,7 +196,7 @@ namespace winrt::Test0::implementation
 
 
 					how different they are*/
-				if (adjList[vertexID].adjancencyVector.size() % 2)
+				if (adjList[nextVertexID].adjancencyVector.size() % 2)
 					;//rule0 = NAND computation? How many of connected vertices are EVEN/ODD?
 				else
 					;//rule1 = memorize? save state?

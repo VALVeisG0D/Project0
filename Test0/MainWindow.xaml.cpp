@@ -272,17 +272,26 @@ namespace winrt::Test0::implementation
 			universe.AddVertex(a);	
 			
 			universe.vertexVisualRepresentationList.push_back(te);
-		SP().Children().Append(universe.vertexVisualRepresentationList.back());
+		//SP().Children().Append(universe.vertexVisualRepresentationList.back());
+		SP().Children().InsertAt(a, universe.vertexVisualRepresentationList.back());
 		
 		universe.vertexVisualRepresentationList.back().Translation(winrt::Windows::Foundation::Numerics::float3((universe.getVertexPosition(a)).first, (universe.getVertexPosition(a)).second, 0.0));
 		}
 		if (a == 20)
 			{ 
-				universe.AddEdge(0, 5);
+				universe.AddEdge(0, 5); 
+				
+				SP().Children().Append(universe.edgeVisualRepresentationList.back());
+				universe.AddEdge(7, 9);
 				SP().Children().Append(universe.edgeVisualRepresentationList.back());
 			}
 		universe.AccessAll(text);
 		a++;
+
+		if (a == 250)
+		universe.RemoveEdge(5, 0);
+		if (a == 300)
+		universe.RemoveVertex(5);
 	}
 
 	void MainWindow::r(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& handler)
