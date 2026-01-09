@@ -13,7 +13,7 @@ namespace winrt::Test0::implementation
 			struct vertexProperties
 			{
 				float x, y;
-				int vertexID;// Identifier incremented to max integer
+				int vertexID;
 				std::vector<int> adjancencyVector;
 			};
 
@@ -22,8 +22,8 @@ namespace winrt::Test0::implementation
 			std::map<int, vertexProperties> adjList;
 			// Variable to track freed identifier after vertices have been removed
 			std::vector<int> freedID;
-			// The next vertex id to be assigned
-			int nextVertexID = 0;
+			// The id to identify the unique elements on the canvas
+			int nextVertexID = 0, nextEdgeID = 0;
 
 			
 			struct vertexVisualProperties
@@ -35,16 +35,15 @@ namespace winrt::Test0::implementation
 
 		public:
 			// Update VisualRepresentation in Graph member functions
-			std::vector<Microsoft::UI::Xaml::Shapes::Line> edgeVisualRepresentationList;
-			std::vector<Microsoft::UI::Xaml::Shapes::Ellipse> vertexVisualRepresentationList;
+			std::map<int, Microsoft::UI::Xaml::Shapes::Line> edgeVisualRepresentationList;
 
 			// Graph Constructor
-			Graph() : nextVertexID(0)
+			Graph()
 			{
 				
 			}
 
-			Graph(std::map<int, vertexProperties> const& newAdjList) : adjList(newAdjList), nextVertexID(0)
+			Graph(std::map<int, vertexProperties> const& newAdjList) : adjList(newAdjList)
 			{
 				
 			}
@@ -54,7 +53,7 @@ namespace winrt::Test0::implementation
 			// Evaluate per vertex and have v be the vertices u should connect to by repeatedly calling this, with u being constant
 			// How are edges added to the graph? Evaluate per vertex, and add per vertex. Want to add edge to vertex that is as close a distance as possible.
 			// Cannot connect existing vertex that is at a distance greater than 1.
-			void AddEdge(int u, int v)
+			void AddEdge(int u, int v, winrt::Microsoft::UI::Xaml::Controls::Canvas const &c)
 			{
 				if (!(adjList.contains(u) && adjList.contains(v)))
 					return;
@@ -71,12 +70,18 @@ namespace winrt::Test0::implementation
 				edgeVisualRepresentation.X2(adjList[v].x);
 				edgeVisualRepresentation.Y1(adjList[u].y);
 				edgeVisualRepresentation.Y2(adjList[v].y);
-				edgeVisualRepresentationList.push_back(edgeVisualRepresentation);
+
+
+				edgeVisualRepresentation.Name(to_hstring(nextEdgeID));
+				edgeVisualRepresentationList[nextEdgeID++] = edgeVisualRepresentation;
+				c.Children().Append(edgeVisualRepresentation); 
+				
+
 			}
 
 			// Removes single edge
 			// Remove duplicate edges by calling this function with same argument repeatedly
-			void RemoveEdge(int u, int v)
+			void RemoveEdge(int u, int v, winrt::Microsoft::UI::Xaml::Controls::Canvas const &c)
 			{
 				if (!(adjList.contains(u) && adjList.contains(v)))
 					return;
@@ -86,12 +91,17 @@ namespace winrt::Test0::implementation
 
 				// remove edge from v to u
 				adjList[v].adjancencyVector.erase(std::find(adjList[v].adjancencyVector.begin(), adjList[v].adjancencyVector.end(), u));
+				
+				unsigned i = 0;
+
+				//if (c.Children().IndexOf(edgeVisualRepresentationList[], i))
+				//	c.Children().RemoveAt(i);
 			}
 
 			// Adds one vertex
 			// How are vertex added? Evaluate per vertex and add per vertex, can be multiple vertex added per vertex. Want to add vertex 
 			// to vertex that is as close a distance as possible.
-			int AddVertex(int pos)
+			int AddVertex(int pos, winrt::Microsoft::UI::Xaml::Controls::Canvas const &c)
 			{
 				/*if (adjList.contains(vertex))
 					return;
@@ -104,9 +114,18 @@ namespace winrt::Test0::implementation
 				else
 					adjList[vertex];*/
 
-				adjList[nextVertexID];
 				adjList[nextVertexID].x = 200.0 + (float)pos * 100.0;
 				adjList[nextVertexID].y = 200.0 + (float)pos * 100.0;
+
+
+				Microsoft::UI::Xaml::Shapes::Ellipse te;
+				te.Fill(Microsoft::UI::Xaml::Media::SolidColorBrush({ Microsoft::UI::Colors::Green() }));
+				te.Height(50.0);
+				te.Width(50.0);
+				std::string hs = "v";
+				hs.append(to_string(to_hstring(nextVertexID)));
+				te.Name(to_hstring(hs));
+				c.Children().Append(te);
 				// connect the new vertex to which other vertex?
 				// can be added to connect to vertex in focus?
 				// Update VisualRepresentation structure, what visual coordinate for new vertex?
@@ -116,7 +135,7 @@ namespace winrt::Test0::implementation
 			}
 
 			// Removes one vertex
-			void RemoveVertex(int vertex)
+			void RemoveVertex(int vertex, winrt::Microsoft::UI::Xaml::Controls::Canvas const& c)
 			{
 				// check if vertex exists
 				if (!adjList.contains(vertex))
@@ -125,18 +144,39 @@ namespace winrt::Test0::implementation
 				// Remove all edge to this vertex from other vertex. CAUTION VERTICES MAY HAVE MULTIPLE EDGES
 				for (int i : adjList[vertex].adjancencyVector)
 					while (std::find(adjList[i].adjancencyVector.begin(), adjList[i].adjancencyVector.end(), vertex) != std::end(adjList[i].adjancencyVector))
-						RemoveEdge(i, vertex);
+						RemoveEdge(i, vertex, c);
 
 				// delete this vertex and record its id for reuse
 				freedID.push_back(vertex);
 				adjList.erase(vertex);
+
+				unsigned i = 0;
+				std::string hs = "v";
+				hs.append(to_string(to_hstring(vertex)));
+				
+				if (c.Children().IndexOf(c.FindName(to_hstring(hs)).as<winrt::Microsoft::UI::Xaml::Shapes::Ellipse>(), i))
+					c.Children().RemoveAt(i);
 			}
 
 			// Goes through all vetices and its edges
-			void AccessAll(winrt::Microsoft::UI::Xaml::Controls::TextBlock& t)
+			void AccessAll(winrt::Microsoft::UI::Xaml::Controls::TextBlock& t, winrt::Microsoft::UI::Xaml::Controls::Canvas const& c)
 			{
 				std::string s;
+				
+				auto it{ c.Children().First() };
 
+				while (it.HasCurrent())
+				{
+					winrt::Microsoft::UI::Xaml::UIElement ci{ it.Current() };
+					s.append(to_string(ci.as<winrt::Microsoft::UI::Xaml::FrameworkElement>().Name()));
+
+					if (to_string(ci.as<winrt::Microsoft::UI::Xaml::FrameworkElement>().Name()).empty())
+						s.append("empty");
+					s.append("\n");
+					it.MoveNext();
+				}
+					
+				
 				for (auto& it : adjList)
 				{
 					s.append(std::to_string(it.second.x) + " --> ");
@@ -196,9 +236,9 @@ namespace winrt::Test0::implementation
 
 
 					how different they are*/
-				if (adjList[nextVertexID].adjancencyVector.size() % 2)
-					;//rule0 = NAND computation? How many of connected vertices are EVEN/ODD?
-				else
+				//if (adjList[].adjancencyVector.size() % 2)
+				//	;//rule0 = NAND computation? How many of connected vertices are EVEN/ODD?
+				//else
 					;//rule1 = memorize? save state?
 			}
 		};
@@ -223,8 +263,6 @@ namespace winrt::Test0::implementation
         Microsoft::UI::Dispatching::DispatcherQueue dispatch{ controller.DispatcherQueue().GetForCurrentThread()};
         Microsoft::UI::Dispatching::DispatcherQueueTimer repeatTimer{ dispatch.CreateTimer() };
         Microsoft::UI::Xaml::Controls::Primitives::RepeatButton b;
-        Microsoft::UI::Xaml::Shapes::Ellipse e, q;
-        float xpose = 265.0, ypose = 400.0;
 		class Graph universe;
     };
 }

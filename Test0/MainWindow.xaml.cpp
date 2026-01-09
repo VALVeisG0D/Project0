@@ -11,120 +11,6 @@
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
-//class Graph
-//{
-//public:
-//	// map to represent an adjacency list
-//	// Add vertex first, then connect with edges
-//	std::map<int, std::vector<int>> adjList;
-//	// Variable to track freed identifier after vertices have been removed
-//	std::vector<int> freedID;
-//
-//	// Graph Constructor
-//	Graph(std::map<int, std::vector<int>> const& newAdjList) : adjList(newAdjList)
-//	{
-//	}
-//
-//	// Adds single edge
-//	// Can add multiple of same edge
-//	void AddEdge(int u, int v)
-//	{
-//		adjList[u].push_back(v);
-//		adjList[v].push_back(u);
-//	}
-//
-//	// Removes single edge
-//	// Remove duplicate edges by calling this function with same argument repeatedly
-//	void RemoveEdge(int u, int v)
-//	{
-//		if (!(adjList.contains(u) && adjList.contains(v)))
-//			return;
-//
-//		// remove edge from u to v
-//		adjList[u].erase(std::find(adjList[u].begin(), adjList[u].end(), v));
-//
-//		// remove edge from v to u
-//		adjList[v].erase(std::find(adjList[v].begin(), adjList[v].end(), u));
-//	}
-//
-//	// Adds one vertex
-//	void AddVertex(int vertex)
-//	{
-//		if (adjList.contains(vertex))
-//			return;
-//
-//		if (!freedID.empty())
-//		{
-//			adjList[freedID.back()];
-//			freedID.pop_back();
-//		}
-//		else
-//			adjList[vertex];
-//
-//		// connect the new vertex to which other vertex?
-//		// can be added to connect to vertex in focus?
-//	}
-//
-//	// Removes one vertex
-//	void RemoveVertex(int vertex)
-//	{
-//		// check if vertex exists
-//		if (!adjList.contains(vertex))
-//			return;
-//
-//		// Remove all edge to this vertex from other vertex. CAUTION VERTICES MAY HAVE MULTIPLE EDGE TO SAME VERTEX
-//		for (int i : adjList[vertex])
-//			while (std::find(adjList[i].begin(), adjList[i].end(), vertex) != std::end(adjList[i]))
-//				RemoveEdge(i, vertex);
-//
-//		// delete this vertex and record its id for reuse
-//		freedID.push_back(vertex);
-//		adjList.erase(vertex);
-//	}
-//
-//	// Goes through all vetices and its edges
-//	void AccessAll(winrt::Microsoft::UI::Xaml::Controls::TextBlock &t)
-//	{
-//		std::string s;
-//
-//		for (auto& it : adjList)
-//		{
-//			s.append(std::to_string(it.first) + " --> ");
-//
-//			for (int j : it.second)
-//			{
-//				s.append(std::to_string(j) + " ");
-//			}
-//
-//			s.append("\n");
-//		}
-//
-//		t.Text(to_hstring(s));
-//	}
-//
-//	// How vertices should be connected during each update
-//	// Tug of War between order and chaos
-//	// Mark all vertices that is about to be deleted, so as to avoid trying to connect edge to vertex that will be deleted
-//	// What kind of structure does this rule hope to achieve? What is a structure? Multiple vertex connected to each other in unique ways?
-//	void UpdateRule(int vertex)
-//	{
-//		// Rule 110 evaluation based on certain number of parameters: 2 color of 3 cells, 2 operations (NAND and shift) based on 3 cells,
-//		//  movement of the head that allows it to evaluate past results
-//		// Graph system evaluation is based on following number of parameters: number of edges connected to a vertex, can also evaluate past
-//		// results because all vertices will be evaluated again after update, communication with neighbor vertex to organize update?
-//		/*if (adjList[vertex].size() > 5)
-//			rule0;
-//		else
-//			rule1;*/
-//
-//		for (auto& it : adjList)
-//		{
-//			it.second.size() < 5;
-//			AddVertex(it.first);
-//		}
-//	}
-//};
-
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace winrt::Test0::implementation
@@ -168,20 +54,7 @@ namespace winrt::Test0::implementation
 
 
 		//apply lessons from subleq:
-		float xposq = 800.0, yposq = 400.0;
-		float vertexRadius = 50.0;
-		
 
-		e.Translation(winrt::Windows::Foundation::Numerics::float3(xpose, ypose, 0.0));
-		q.Translation(winrt::Windows::Foundation::Numerics::float3(xposq, yposq, 0.0));
-
-
-		e.Fill(blue);
-		e.Height(vertexRadius);
-		e.Width(vertexRadius);
-		q.Fill(red);
-		q.Height(vertexRadius);
-		q.Width(vertexRadius);
 
 		//node will spawn new node. apply rule 110 to rewrite system or similar systems??
 		//rule 110 has 3 points of input, how many points of input will this system have??
@@ -196,7 +69,7 @@ namespace winrt::Test0::implementation
 		b.Content(winrt::box_value(L"click"));
 		b.Click({ this, &MainWindow::r });
 
-		SP().Children().Append(b);
+		//SP().Children().Append(b);
 		//	Windows::Foundation::IAsyncAction aa = DoWorkAsync(tb, e);
 
 
@@ -250,7 +123,7 @@ namespace winrt::Test0::implementation
 
 	void MainWindow::SimulationLoop(Microsoft::UI::Xaml::Controls::TextBlock textblock)
 	{
-		repeatTimer.Interval(std::chrono::milliseconds{1});
+		repeatTimer.Interval(std::chrono::milliseconds{20});
 		repeatTimer.Tick({ this, &MainWindow::TickEventHandler });
 		repeatTimer.Start();
 
@@ -262,40 +135,42 @@ namespace winrt::Test0::implementation
 	{
 		static int a = 0;
 
-		Microsoft::UI::Xaml::Shapes::Ellipse te;
-		te.Fill(Microsoft::UI::Xaml::Media::SolidColorBrush({ Microsoft::UI::Colors::Green() }));
-		te.Height(50.0);
-		te.Width(50.0);
-
 		if (a < 10)
 		{
-			universe.AddVertex(a);	
-			
-			universe.vertexVisualRepresentationList.push_back(te);
-		//SP().Children().Append(universe.vertexVisualRepresentationList.back());
-		SP().Children().InsertAt(a, universe.vertexVisualRepresentationList.back());
-		
-		universe.vertexVisualRepresentationList.back().Translation(winrt::Windows::Foundation::Numerics::float3((universe.getVertexPosition(a)).first, (universe.getVertexPosition(a)).second, 0.0));
+			universe.AddVertex(a, SP());	
+
+			unsigned i = 0;
+			std::string hs = "v";
+			hs.append(to_string(to_hstring(a)));
+			SP().Children().IndexOf(SP().FindName(to_hstring(hs)).as<winrt::Microsoft::UI::Xaml::UIElement>(), i);
+
+			if (hs == "v0")
+				SP().Children().GetAt(i).as<winrt::Microsoft::UI::Xaml::Shapes::Ellipse>().Fill(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Red() });
+	
+			SP().Children().GetAt(i).Translation(winrt::Windows::Foundation::Numerics::float3((universe.getVertexPosition(a)).first, (universe.getVertexPosition(a)).second, 0.0));
 		}
-		if (a == 20)
+	/*	if (a == 20)
 			{ 
-				universe.AddEdge(0, 5); 
-				
-				SP().Children().Append(universe.edgeVisualRepresentationList.back());
-				universe.AddEdge(7, 9);
-				SP().Children().Append(universe.edgeVisualRepresentationList.back());
-			}
-		universe.AccessAll(text);
+				universe.AddEdge(0, 3, SP()); 
+				universe.AddEdge(3, 5, SP());
+				universe.AddEdge(7, 9, SP());
+			}*/
+		universe.AccessAll(text, SP());
 		a++;
 
-		if (a == 250)
-		universe.RemoveEdge(5, 0);
+		/*if (a == 250)
+		{
+			universe.RemoveEdge(3, 0, SP());
+		}*/
 		if (a == 300)
-		universe.RemoveVertex(5);
+		{
+			
+			universe.RemoveVertex(7, SP());
+		}
 	}
 
 	void MainWindow::r(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& handler)
 	{
-		b.Content(winrt::box_value(40));
+		//b.Content(winrt::box_value(40));
 	}
 }
