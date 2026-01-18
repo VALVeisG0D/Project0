@@ -23,7 +23,7 @@ namespace winrt::Test0::implementation
 			// Variable to track freed identifier after vertices have been removed
 			std::vector<int> freedID;
 			// The id to identify the unique elements on the canvas
-			int nextVertexID = 0, nextEdgeID = 0;
+			int nextVertexID = 0;
 
 			
 			struct vertexVisualProperties
@@ -34,9 +34,6 @@ namespace winrt::Test0::implementation
 			};
 
 		public:
-			// Update VisualRepresentation in Graph member functions
-			std::map<int, Microsoft::UI::Xaml::Shapes::Line> edgeVisualRepresentationList;
-
 			// Graph Constructor
 			Graph()
 			{
@@ -71,12 +68,11 @@ namespace winrt::Test0::implementation
 				edgeVisualRepresentation.Y1(adjList[u].y);
 				edgeVisualRepresentation.Y2(adjList[v].y);
 
-
-				edgeVisualRepresentation.Name(to_hstring(nextEdgeID));
-				edgeVisualRepresentationList[nextEdgeID++] = edgeVisualRepresentation;
+				std::string hs = "e";
+				hs.append(to_string(to_hstring(u)));
+				hs.append(to_string(to_hstring(v)));
+				edgeVisualRepresentation.Name(to_hstring(hs));
 				c.Children().Append(edgeVisualRepresentation); 
-				
-
 			}
 
 			// Removes single edge
@@ -94,8 +90,12 @@ namespace winrt::Test0::implementation
 				
 				unsigned i = 0;
 
-				//if (c.Children().IndexOf(edgeVisualRepresentationList[], i))
-				//	c.Children().RemoveAt(i);
+				std::string hs = "e";
+				hs.append(to_string(to_hstring(u)));
+				hs.append(to_string(to_hstring(v)));
+
+				if (c.Children().IndexOf(c.FindName(to_hstring(hs)).as<winrt::Microsoft::UI::Xaml::Shapes::Line>(), i))
+					c.Children().RemoveAt(i);
 			}
 
 			// Adds one vertex
@@ -144,7 +144,7 @@ namespace winrt::Test0::implementation
 				// Remove all edge to this vertex from other vertex. CAUTION VERTICES MAY HAVE MULTIPLE EDGES
 				for (int i : adjList[vertex].adjancencyVector)
 					while (std::find(adjList[i].adjancencyVector.begin(), adjList[i].adjancencyVector.end(), vertex) != std::end(adjList[i].adjancencyVector))
-						RemoveEdge(i, vertex, c);
+						RemoveEdge(vertex, i, c);
 
 				// delete this vertex and record its id for reuse
 				freedID.push_back(vertex);

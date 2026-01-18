@@ -123,7 +123,7 @@ namespace winrt::Test0::implementation
 
 	void MainWindow::SimulationLoop(Microsoft::UI::Xaml::Controls::TextBlock textblock)
 	{
-		repeatTimer.Interval(std::chrono::milliseconds{20});
+		repeatTimer.Interval(std::chrono::milliseconds{20}); //careful race condition likely if set too low
 		repeatTimer.Tick({ this, &MainWindow::TickEventHandler });
 		repeatTimer.Start();
 
@@ -149,19 +149,19 @@ namespace winrt::Test0::implementation
 	
 			SP().Children().GetAt(i).Translation(winrt::Windows::Foundation::Numerics::float3((universe.getVertexPosition(a)).first, (universe.getVertexPosition(a)).second, 0.0));
 		}
-	/*	if (a == 20)
+		if (a == 20)
 			{ 
 				universe.AddEdge(0, 3, SP()); 
 				universe.AddEdge(3, 5, SP());
 				universe.AddEdge(7, 9, SP());
-			}*/
+			}
 		universe.AccessAll(text, SP());
 		a++;
 
-		/*if (a == 250)
+		if (a == 250)
 		{
-			universe.RemoveEdge(3, 0, SP());
-		}*/
+			universe.RemoveEdge(0, 3, SP());
+		}
 		if (a == 300)
 		{
 			
