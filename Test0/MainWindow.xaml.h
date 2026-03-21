@@ -6,6 +6,9 @@ namespace winrt::Test0::implementation
 {
     struct MainWindow : MainWindowT<MainWindow>
     {
+		// Can graphs represent languages and numbers???
+		// Test some simple cases first. Then make first simple rule
+		// Make it a simple graph?
 		class Graph
 		{
 			// Need to search for vertex and edge for removing and accessing and adding
@@ -25,14 +28,6 @@ namespace winrt::Test0::implementation
 			// The id to identify the unique elements on the canvas
 			int nextVertexID = 0;
 
-			
-			struct vertexVisualProperties
-			{
-				int x = 0.0f, y = 0.0f, id;
-				Microsoft::UI::Xaml::Media::SolidColorBrush blue{ Microsoft::UI::Colors::Green() };
-				Microsoft::UI::Xaml::Shapes::Ellipse f;
-			};
-
 		public:
 			// Graph Constructor
 			Graph()
@@ -45,14 +40,16 @@ namespace winrt::Test0::implementation
 				
 			}
 
-			// Adds single edge
-			// Can add multiple of same edge
+			// Adds single edge. Since its a simple graph, it will not have multiple edges between same vertices and no loops. If there is already an edge, do nothing.
 			// Evaluate per vertex and have v be the vertices u should connect to by repeatedly calling this, with u being constant
 			// How are edges added to the graph? Evaluate per vertex, and add per vertex. Want to add edge to vertex that is as close a distance as possible.
 			// Cannot connect existing vertex that is at a distance greater than 1.
 			void AddEdge(int u, int v, winrt::Microsoft::UI::Xaml::Controls::Canvas const &c)
 			{
-				if (!(adjList.contains(u) && adjList.contains(v)))
+				if ((!(adjList.contains(u) && adjList.contains(v))) 
+					|| (!(std::find(adjList[u].adjancencyVector.begin(), adjList[u].adjancencyVector.end(), v) == adjList[u].adjancencyVector.end())
+					&& !(std::find(adjList[v].adjancencyVector.begin(), adjList[v].adjancencyVector.end(), u) == adjList[v].adjancencyVector.end()))
+					|| (u == v))
 					return;
 
 				adjList[u].adjancencyVector.push_back(v);
@@ -68,8 +65,12 @@ namespace winrt::Test0::implementation
 				edgeVisualRepresentation.Y1(adjList[u].y);
 				edgeVisualRepresentation.Y2(adjList[v].y);
 
-				std::string hs = "e";
-				hs.append(to_string(to_hstring(u)));
+				// Edge name should have the smaller vertexID come first
+				if (u > v)
+					std::swap(u, v);
+
+				std::string hs = to_string(to_hstring(u));
+				hs.append("-");
 				hs.append(to_string(to_hstring(v)));
 				edgeVisualRepresentation.Name(to_hstring(hs));
 				c.Children().Append(edgeVisualRepresentation); 
@@ -79,7 +80,9 @@ namespace winrt::Test0::implementation
 			// Remove duplicate edges by calling this function with same argument repeatedly
 			void RemoveEdge(int u, int v, winrt::Microsoft::UI::Xaml::Controls::Canvas const &c)
 			{
-				if (!(adjList.contains(u) && adjList.contains(v)))
+				if (!(adjList.contains(u) && adjList.contains(v)) 
+					|| ((std::find(adjList[u].adjancencyVector.begin(), adjList[u].adjancencyVector.end(), v) == adjList[u].adjancencyVector.end())
+					|| (std::find(adjList[v].adjancencyVector.begin(), adjList[v].adjancencyVector.end(), u) == adjList[v].adjancencyVector.end())))
 					return;
 
 				// remove edge from u to v
@@ -90,8 +93,12 @@ namespace winrt::Test0::implementation
 				
 				unsigned i = 0;
 
-				std::string hs = "e";
-				hs.append(to_string(to_hstring(u)));
+				// Edge name should have the smaller vertexID come first
+				if (u > v)
+					std::swap(u, v);
+
+				std::string hs = to_string(to_hstring(u));
+				hs.append("-");
 				hs.append(to_string(to_hstring(v)));
 
 				if (c.Children().IndexOf(c.FindName(to_hstring(hs)).as<winrt::Microsoft::UI::Xaml::Shapes::Line>(), i))
