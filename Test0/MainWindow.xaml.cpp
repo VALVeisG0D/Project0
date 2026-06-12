@@ -147,7 +147,6 @@ namespace winrt::Test0::implementation
 			if (hs == "v0")
 				SP().Children().GetAt(i).as<winrt::Microsoft::UI::Xaml::Shapes::Ellipse>().Fill(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Red() });
 	
-			SP().Children().GetAt(i).Translation(winrt::Windows::Foundation::Numerics::float3((universe.getVertexPosition(a)).first, (universe.getVertexPosition(a)).second, 0.0));
 		}
 		if (a == 20)
 			{ 
@@ -167,7 +166,7 @@ namespace winrt::Test0::implementation
 		if (a == 250)
 		{
 			universe.RemoveEdge(0, 3, SP());
-			universe.RemoveEdge(0, 8, SP());
+			universe.RemoveEdge(1, 3, SP());
 		}
 		if (a == 300)
 		{

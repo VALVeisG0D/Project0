@@ -15,9 +15,17 @@ namespace winrt::Test0::implementation
 			// 1. search 2. do work on them
 			struct vertexProperties
 			{
-				float x, y;
-				int vertexID;
 				std::vector<int> adjancencyVector;
+
+				bool edgeExists(int e)
+				{
+					return std::find(adjancencyVector.begin(), adjancencyVector.end(), e) != adjancencyVector.end();
+				}
+
+				void updateEdgePosition()
+				{
+
+				}
 			};
 
 			// map to represent an adjacency list
@@ -60,16 +68,32 @@ namespace winrt::Test0::implementation
 				Microsoft::UI::Xaml::Shapes::Line edgeVisualRepresentation;
 				edgeVisualRepresentation.Stroke(Microsoft::UI::Xaml::Media::SolidColorBrush{ Microsoft::UI::Colors::Green() });
 
-				edgeVisualRepresentation.X1(adjList[u].x);
-				edgeVisualRepresentation.X2(adjList[v].x);
-				edgeVisualRepresentation.Y1(adjList[u].y);
-				edgeVisualRepresentation.Y2(adjList[v].y);
+				unsigned i = 0;
+				std::string hs = "v";
+				hs.append(to_string(to_hstring(v)));
+				winrt::Windows::Foundation::Numerics::float3 coord;
+
+				if (c.Children().IndexOf(c.FindName(to_hstring(hs)).as<winrt::Microsoft::UI::Xaml::Shapes::Ellipse>(), i))
+					coord = c.Children().GetAt(i).Translation();
+
+				edgeVisualRepresentation.X1(coord.x);
+				edgeVisualRepresentation.Y1(coord.y);
+
+				i = 0;
+				hs = "v";
+				hs.append(to_string(to_hstring(u)));
+
+				if (c.Children().IndexOf(c.FindName(to_hstring(hs)).as<winrt::Microsoft::UI::Xaml::Shapes::Ellipse>(), i))
+					coord = c.Children().GetAt(i).Translation();
+
+				edgeVisualRepresentation.X2(coord.x);
+				edgeVisualRepresentation.Y2(coord.y);
 
 				// Edge name should have the smaller vertexID come first
 				if (u > v)
 					std::swap(u, v);
 
-				std::string hs = to_string(to_hstring(u));
+				hs = to_string(to_hstring(u));
 				hs.append("-");
 				hs.append(to_string(to_hstring(v)));
 				edgeVisualRepresentation.Name(to_hstring(hs));
@@ -121,18 +145,19 @@ namespace winrt::Test0::implementation
 				else
 					adjList[vertex];*/
 
-				adjList[nextVertexID].x = 200.0 + (float)pos * 100.0;
-				adjList[nextVertexID].y = 200.0 + (float)pos * 100.0;
-
-
 				Microsoft::UI::Xaml::Shapes::Ellipse te;
 				te.Fill(Microsoft::UI::Xaml::Media::SolidColorBrush({ Microsoft::UI::Colors::Green() }));
 				te.Height(50.0);
 				te.Width(50.0);
+				te.Translation({ 200.0f + (float)pos * 100.0f, 200.0f + (float)pos * 100.0f, 0.0f });
 				std::string hs = "v";
 				hs.append(to_string(to_hstring(nextVertexID)));
 				te.Name(to_hstring(hs));
 				c.Children().Append(te);
+				adjList[nextVertexID];
+
+
+				
 				// connect the new vertex to which other vertex?
 				// can be added to connect to vertex in focus?
 				// Update VisualRepresentation structure, what visual coordinate for new vertex?
@@ -150,7 +175,7 @@ namespace winrt::Test0::implementation
 
 				// Remove all edge to this vertex from other vertex. CAUTION VERTICES MAY HAVE MULTIPLE EDGES
 				for (int i : adjList[vertex].adjancencyVector)
-					while (std::find(adjList[i].adjancencyVector.begin(), adjList[i].adjancencyVector.end(), vertex) != std::end(adjList[i].adjancencyVector))
+					while (std::find(adjList[i].adjancencyVector.begin(), adjList[i].adjancencyVector.end(), vertex) == adjList[i].adjancencyVector.end())
 						RemoveEdge(vertex, i, c);
 
 				// delete this vertex and record its id for reuse
@@ -184,11 +209,11 @@ namespace winrt::Test0::implementation
 				}
 					
 				
-				for (auto& it : adjList)
+				for (auto& ii : adjList)
 				{
-					s.append(std::to_string(it.second.x) + " --> ");
+					s.append(std::to_string(ii.first) + " --> ");
 
-					for (int j : it.second.adjancencyVector)
+					for (int j : ii.second.adjancencyVector)
 					{
 						s.append(std::to_string(j) + " ");
 					}
@@ -199,9 +224,9 @@ namespace winrt::Test0::implementation
 				t.Text(to_hstring(s));
 			}
 
-			const std::pair<float, float> getVertexPosition(int index)
+			const bool getVertexIndex(int index)
 			{
-				return std::pair<float, float>((adjList[index].x), adjList[index].y);
+				return false;
 			}
 
 			// How vertices should be connected during each update
